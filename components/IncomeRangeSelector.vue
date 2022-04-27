@@ -1,7 +1,7 @@
 <template>
   <section class="range-section">
-    <h5>$</h5>
-    <input type="number" v-model="startingIncome" :style="{width: calculateInputWidth}" placeholder="0">
+    <h5 class="range-section_dollar_sign">$</h5>
+    <input type="number" v-model="userInput" :style="{width: calculateInputWidth}" placeholder="0" @input="validate" ref="userInput">
     <!-- <div class="range-arrows">
       <img src="~/assets/images/triangle.png" alt="Up arrow" class="up-arrow" />
       <img src="~/assets/images/triangle.png" alt="Up arrow" class="down-arrow" />
@@ -11,18 +11,38 @@
 
 <script>
 export default {
+  emits: ["emit-user-input"],
+
   data() {
     return {
-      startingIncome: "",
+      userInput: "",
+      accurateData: true,
     };
+  },
+
+  methods: {
+    validate(){
+       if(Number(this.userInput) < 0){
+         this.$refs.userInput.style.color = "darkred";
+         this.$refs.userInput.style.borderColor = "darkred";
+         this.accurateData = false;
+       }else {
+         this.$refs.userInput.style.color = "#333333"
+         this.$refs.userInput.style.borderColor = "#333333"
+         this.accurateData = true;
+    }
+    if(this.accurateData){
+      this.$emit("emit-user-input", this.userInput)
+    }
+    }
   },
 
   computed: {
     calculateInputWidth(){
-      if(this.startingIncome == '')
+      if(this.userInput.length == '')
         return `30px`;
 
-      return `${this.startingIncome.length * 30}px`
+      return `${this.userInput.length * 30}px`
     }
   }
 };

@@ -4,9 +4,9 @@
             <h3 class="arrange-sign-up_title">Let's start saving up money</h3>
             <div class="horizontal-link"></div>
             <h5>How much do you currently have?</h5>
-            <IncomeRangeSelector></IncomeRangeSelector>
+            <IncomeRangeSelector @emit-user-input="storeUserCurrentIncome"></IncomeRangeSelector>
             <h5>How much do you want to save?</h5>
-            <IncomeRangeSelector></IncomeRangeSelector>
+            <IncomeRangeSelector @emit-user-input="storeUserDesiredIncome"></IncomeRangeSelector>
             <BaseButton class="base-button">Continue</BaseButton>
         </div>
     </main>
@@ -21,10 +21,23 @@ export default {
             title: "Budget app sign-up page"
         };
     },
-    data() {
-        return {};
+    components: { IncomeRangeSelector, BaseButton },
+    data(){
+        return {
+            usersCurrentIncome: 0,
+            usersDesiredIncome: 0,
+        }
     },
-    components: { IncomeRangeSelector, BaseButton }
+
+    methods: {
+        storeUserCurrentIncome(data){
+            this.usersCurrentIncome = Number(data);
+        },
+
+        storeUserDesiredIncome(data){
+            this.usersDesiredIncome = Number(data);
+        }
+    }
 }
 </script>
 
