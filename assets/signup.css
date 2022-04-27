@@ -1,0 +1,52 @@
+:root {
+    --main-bg: #393B3A;
+    --button-colors: #468C5F;
+}
+
+.page-bg {
+    background-color: #393B3A;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.arrange-sign-up {
+    background-color: white;
+    width: 550px;
+    height: 455px;
+    box-shadow: 1px 5px 12px rgb(0 0 0 / 62%);
+    border-radius: 11px;
+    display: flex;
+    box-sizing: border-box;
+    padding: 45px 20px;
+    flex-direction: column;
+    align-items: center;
+    row-gap: 20px;
+    position: relative;
+}
+
+
+.arrange-sign-up > h5{
+    font-weight: 300;
+    font-size: 15px;
+}
+
+.arrange-sign-up_title{
+    font-weight: 500;
+    font-size: 20px
+}
+
+.horizontal-link{
+    height: 1px;
+    width: 100px;
+    background-color: #353535;
+    border-radius: 25px;   
+}
+
+.base-button{
+    position: absolute;
+    bottom: 20px;
+    right: 30px
+}
