@@ -1,6 +1,6 @@
 <template>
 <main>
-  <h3>banana</h3>
+  <h3>Main page</h3>
 </main>
 </template>
 
@@ -8,11 +8,13 @@
 export default {
   name: 'IndexPage',
 
-  //routing immediately to signup page 
   //! Does check for whether user is signed in later 
   mounted(){
-    this.$router.push("/signup")
+    if(!this.$store.state.userIsSignedIn){
+      this.$router.push("/signup");
+    }
   }
+  
 }
 </script>
 
