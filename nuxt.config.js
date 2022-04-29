@@ -43,6 +43,6 @@ export default {
   },
 
   env: {
-    firebaseAPIKey: 'testing-two',
+    firebaseAPIKey: 'testing-four',
   }
 }
