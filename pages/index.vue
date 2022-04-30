@@ -5,14 +5,13 @@
 </template>
 
 <script>
+import {userIsSignedIn} from "~/services/firebaseService.js";
 export default {
   name: 'IndexPage',
 
-  //! Does check for whether user is signed in later 
   mounted(){
-    if(!this.$store.state.userIsSignedIn){
-      this.$router.push("/signup");
-    }
+    console.log("youre in home now")
+    userIsSignedIn(this)
   }
   
 }
