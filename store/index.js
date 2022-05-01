@@ -1,6 +1,7 @@
 export const state = () => ({
     userIsSignedIn: false,
-    userID: ''
+    userID: '',
+    userGoals: {},
 })
 
 export const mutations = {
@@ -9,5 +10,8 @@ export const mutations = {
     },
     changeUserIDState(state, uid) {
         state.userID = uid;
+    },
+    changeUserGoals(state, userGoals) {
+        state.userGoals = userGoals;
     },
 }

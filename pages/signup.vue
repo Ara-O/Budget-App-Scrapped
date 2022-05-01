@@ -1,6 +1,6 @@
 <template>
   <main class="page-bg">
-    <component :is="currentComponent" @continue="moveOn"></component>
+    <component :is="currentComponent" @continue.once="moveOn"></component>
   </main>
 </template>
 
@@ -14,15 +14,7 @@ export default {
 
   methods: {
     moveOn() {
-      if(this.currentComponent === "SignUserIn"){
-        //Checking if user is signed in
-        if(this.$store.state.userIsSignedIn){
-          this.$router.push("/")
-        }
-      }
-
       this.currentComponent = "SignUserIn";
-
     },
   },
 };

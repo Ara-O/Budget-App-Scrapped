@@ -27,22 +27,25 @@ export default {
     
     data(){
         return {
-            usersCurrentIncome: 0,
-            usersDesiredIncome: 0,
+            userGoals: {
+                usersCurrentIncome: 0,
+                usersDesiredIncome: 0,
+            }
         }
     },
 
     methods: {
         storeUserCurrentIncome(data){
-            this.usersCurrentIncome = Number(data);
+            this.userGoals.usersCurrentIncome = Number(data);
         },
 
         storeUserDesiredIncome(data){
-            this.usersDesiredIncome = Number(data);
+            this.userGoals.usersDesiredIncome = Number(data);
         },
 
         continueToNextSection(){
-            this.$emit("continue")
+            this.$emit("continue");
+            this.$store.commit("changeUserGoals", this.userGoals);
         }
     }
 }
