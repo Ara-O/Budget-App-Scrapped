@@ -58,13 +58,23 @@ export function userIsSignedIn(thisvalue) {
   });
 }
 
-export function getUserData(thisvalue){
+
+export async function getUserData(thisvalue){
   let that = thisvalue
-  const db = getDatabase();
-  const uid = that.$store.state.userID;
-  const userData = ref(db, 'users/' + uid);
-  onValue(userData, (snapshot) => {
-    const data = snapshot.val();
-    console.log(data)
-  });
+
+  //Promise that resolves when the data from the user has been retrieved
+  let retrieveUserData = new Promise(resolve => {
+    const db = getDatabase();
+    const uid = that.$store.state.userID;
+    const userData = ref(db, 'users/' + uid);
+    onValue(userData, (snapshot) => {
+      const data = snapshot.val();
+      resolve(data);
+    });
+  });  
+
+  //this waits for the promise to resolve, then stores the promise in userData
+  let userData = await retrieveUserData;
+
+  return userData;
 }
