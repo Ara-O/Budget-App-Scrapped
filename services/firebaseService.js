@@ -50,7 +50,7 @@ export function userIsSignedIn(thisvalue) {
     if (user) {
       const uid = user.uid;
       that.$store.commit("changeUserIDState", uid);
-      that.getData();
+      that.getRecordsData();
     } else {
       that.$router.push("/signup")
     }

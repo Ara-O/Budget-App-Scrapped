@@ -185,11 +185,21 @@ export default {
 
     submitEntry() {
       if (this.validateEntry()) {
-        const db = getDatabase();
-        let uid = this.$store.state.userID;
-        let _this = this;
-        push(ref(db, "users/" + uid + "/entries"), _this.entryData);
-        this.updateCurrentIncome();
+        console.log("weirddd", this.entryData)
+        if(this.entryData.budgetUnder === "Upcoming Bills"){
+          const db = getDatabase();
+          let uid = this.$store.state.userID;
+          let _this = this;
+          push(ref(db, "users/" + uid + "/entries/upcomingBills"), _this.entryData);
+        }
+
+        if(this.entryData.budgetUnder === "Income" || this.entryData.budgetUnder === "Expenses"){
+          const db = getDatabase();
+          let uid = this.$store.state.userID;
+          let _this = this;
+          push(ref(db, "users/" + uid + "/entries/records"), _this.entryData);
+          this.updateCurrentIncome();
+        }
         this.successfulEntry();
       }
     },
@@ -252,7 +262,7 @@ export default {
 }
 
 .add-expenses {
-  width: 57px;
+  width: 54px;
   border-radius: 7px;
   border: none;
   display: flex;

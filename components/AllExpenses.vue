@@ -17,23 +17,13 @@
 <script>
 export default {
   props: ["entries"],
-
-  data(){
-    return{
-      userEntries: {}
-    }
-  },
-
-  mounted() {
-   this.userEntries = this.entries
-  },
 };
 </script>
 
 <style scoped>
 .plan-budget-items-section {
   background: #6c6c6c87;
-  width: 583px;
+  width: 605px;
   display: flex;
   border-radius: 6px;
   justify-content: center;

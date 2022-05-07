@@ -1,8 +1,7 @@
 <template>
   <main>
     <section class="section-left">
-      <AddExpenses :userName = "usersName" @successfulEntry="getData"></AddExpenses>
-    <!-- !PROPS NOT GETTING PASSED -->
+      <AddExpenses :userName = "usersName" @successfulEntry="getRecordsData"></AddExpenses>
       <AllExpenses :entries="userEntries"></AllExpenses>
     </section>
 
@@ -13,9 +12,7 @@
           <h2>${{ usersCurrentIncome }}</h2>
         </div>
       </div>
-      <div class="section-right-bottom">
-        <h3>helo</h3>
-      </div>
+      <AllBills :bills="userBills"></AllBills>
     </section>
   </main>
 </template>
@@ -45,19 +42,25 @@ export default {
     return {
       usersCurrentIncome: "",
       userEntries: [],
-      usersName: ""
+      usersName: "",
+      userBills: []
     };
   },
 
   methods: {
-    getData() {
+    getRecordsData() {
       this.userEntries = [];
+      this.userBills = [];
       let _this = this;
       getUserData(this).then((val) => {
         _this.usersCurrentIncome = val.userGoals.usersCurrentIncome;
         _this.usersName = val.username
-        for(const id in val.entries){
-          _this.userEntries.push(val.entries[id])
+        for(const id in val.entries.records){
+          _this.userEntries.push(val.entries.records[id])
+        }
+        
+        for(const id in val.entries.upcomingBills){
+          _this.userBills.push(val.entries.upcomingBills[id])
         }
       });
     },
