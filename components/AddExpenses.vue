@@ -1,6 +1,6 @@
 <template>
   <div class="add-expenses-section">
-    <h3>Add Expense/Income</h3>
+    <h3>Welcome {{ userName }} - Add Expense or Income</h3>
     <article class="add-expenses-section_inputs">
       <input
         type="text"
@@ -51,6 +51,7 @@
           v-for="budgetItem in budgetItems"
           :disabled="budgetItem === 'Save As'"
           :selected="budgetItem === 'Save As'"
+          :hidden="budgetItem === 'Save As'"
           :value="budgetItem"
         >
           {{ budgetItem }}
@@ -58,7 +59,11 @@
       </select>
 
       <!-- Send button -->
-      <button class="add-expenses" :class="{'add-expenses-succesful': alert}" @click="submitEntry">
+      <button
+        class="add-expenses"
+        :class="{ 'add-expenses-succesful': alert }"
+        @click="submitEntry"
+      >
         <img
           src="https://cdn.onlinewebfonts.com/svg/img_84809.png"
           alt="Add expenses icon"
@@ -72,18 +77,20 @@
 </template>
 
 <script>
-import { getDatabase, ref, push } from "firebase/database";
+import { getDatabase, ref, push, onValue, set } from "firebase/database";
+
 export default {
+  props: ["userName"],
+  emits: ["successfulEntry"],
   data() {
     return {
       budgetItems: ["Save As", "Entertainment", "College", "Rent", "Other"],
       entryData: {
-        description: "Bob",
-        income: 30,
-        budgetUnder: "Expenses",
-        saveAs: "College",
+        description: "",
+        income: null,
+        budgetUnder: "Budget Under",
+        saveAs: "Save As",
       },
-
       errorMatch: {
         "description-error": false,
         "income-error": false,
@@ -92,7 +99,7 @@ export default {
       },
 
       alert: false,
-      messageForAlert: ""
+      messageForAlert: "",
     };
   },
 
@@ -117,9 +124,31 @@ export default {
   methods: {
     successfulEntry() {
       this.alert = true;
-      window.setTimeout(()=>{
+      this.entryData = {
+        description: "",
+        income: null,
+        budgetUnder: "Budget Under",
+        saveAs: "Save As",
+      },
+      // Updating the index.vue
+      this.$emit("successfulEntry");
+      window.setTimeout(() => {
         this.alert = false;
-      }, 2000)
+      }, 2000);
+    },
+
+    updateCurrentIncome() {
+      const db = getDatabase();
+      const uid = this.$store.state.userID;
+      const _this = this;
+      const userData = ref(db, "users/" + uid + "/userGoals/usersCurrentIncome");
+      let newCurrentIncome;
+      onValue(userData, (snapshot) => {
+        const data = snapshot.val();
+        newCurrentIncome = data + Number(_this.entryData.income);
+      });
+
+      set(ref(db, "users/" + uid + "/userGoals/usersCurrentIncome"), newCurrentIncome);
     },
 
     validateEntry() {
@@ -160,7 +189,7 @@ export default {
         let uid = this.$store.state.userID;
         let _this = this;
         push(ref(db, "users/" + uid + "/entries"), _this.entryData);
-
+        this.updateCurrentIncome();
         this.successfulEntry();
       }
     },
@@ -270,7 +299,7 @@ select {
 .error {
   box-shadow: 1px 1px 2px 0px #380505, 0px 0px 2px gray;
 }
-.add-expenses-succesful{
+.add-expenses-succesful {
   background: rgb(85 132 92);
 }
 </style>

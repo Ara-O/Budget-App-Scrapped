@@ -1,31 +1,16 @@
 <template>
   <main>
     <section class="section-left">
-      <AddExpenses></AddExpenses>
-      <div class="plan-budget-section">
-        <div class="expenses-and-income-section">
-          <h3>Expenses and Income</h3>
-          <br />
-          <span class="expenses-and-income-section_item">
-            <h5>Spent money at Walmart</h5>
-            <h5>$500</h5>
-          </span>
-          <span class="expenses-and-income-section_item">
-            <h5>Spent money at Walmart</h5>
-            <h5>$500</h5>
-          </span>
-        </div>
-        <div class="plan-budget-items-section">
-          <h3>banan</h3>
-        </div>
-      </div>
+      <AddExpenses :userName = "usersName" @successfulEntry="getData"></AddExpenses>
+    <!-- !PROPS NOT GETTING PASSED -->
+      <AllExpenses :entries="userEntries"></AllExpenses>
     </section>
 
     <section class="section-right">
       <div class="section-right-top">
-        <div class="current-income-section">
+        <div class="current-income-section" :class="{'current-income-section_negative': usersCurrentIncome < 0}">
           <h3>Current Income</h3>
-          <h2>$59</h2>
+          <h2>${{ usersCurrentIncome }}</h2>
         </div>
       </div>
       <div class="section-right-bottom">
@@ -36,7 +21,10 @@
 </template>
 
 <script>
-import { userIsSignedIn, getUserData } from "~/services/firebaseService.js";
+import {
+  userIsSignedIn,
+  getUserData,
+} from "~/services/firebaseService.js";
 import BaseIncomeRangeSelector from "../components/Base/BaseIncomeRangeSelector.vue";
 import AddExpenses from "../components/AddExpenses.vue";
 export default {
@@ -54,17 +42,28 @@ export default {
   },
 
   data() {
-    return {};
+    return {
+      usersCurrentIncome: "",
+      userEntries: [],
+      usersName: ""
+    };
   },
 
   methods: {
     getData() {
+      this.userEntries = [];
+      let _this = this;
       getUserData(this).then((val) => {
-        console.log("boy", val);
+        _this.usersCurrentIncome = val.userGoals.usersCurrentIncome;
+        _this.usersName = val.username
+        for(const id in val.entries){
+          _this.userEntries.push(val.entries[id])
+        }
       });
     },
   },
-  mounted() {
+
+  created() {
     userIsSignedIn(this);
   },
   components: { BaseIncomeRangeSelector, AddExpenses },
@@ -76,5 +75,5 @@ export default {
 </style>
 
 <style scoped>
-@import url("../assets/index.css")
+@import url("../assets/index.css");
 </style>

@@ -2,7 +2,6 @@ import { initializeApp } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { getDatabase, ref, set, onValue } from "firebase/database";
 
-//! Work on environment variable
 const firebaseConfig = {
   apiKey: process.env.firebaseAPIKey,
   authDomain: process.env.authDomain,
@@ -59,7 +58,7 @@ export function userIsSignedIn(thisvalue) {
 }
 
 
-export async function getUserData(thisvalue){
+export async function getUserData(thisvalue) {
   let that = thisvalue
 
   //Promise that resolves when the data from the user has been retrieved
@@ -71,7 +70,7 @@ export async function getUserData(thisvalue){
       const data = snapshot.val();
       resolve(data);
     });
-  });  
+  });
 
   //this waits for the promise to resolve, then stores the promise in userData
   let userData = await retrieveUserData;
