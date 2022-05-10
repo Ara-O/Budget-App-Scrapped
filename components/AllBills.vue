@@ -64,7 +64,7 @@ border-radius: 15px;
     color: white;
     margin-bottom: 18px;
     width: 170px;
-    justify-content: space-around;
+    justify-content: space-between;
 }
 
 </style>

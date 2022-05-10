@@ -70,9 +70,6 @@
         />
       </button>
     </article>
-    <!-- <div class="alert" :class="{ 'alert-active': alert }" v-if="alert">
-      <h3>{{ messageForAlert }}</h3>
-    </div> -->
   </div>
 </template>
 
@@ -185,7 +182,6 @@ export default {
 
     submitEntry() {
       if (this.validateEntry()) {
-        console.log("weirddd", this.entryData)
         if(this.entryData.budgetUnder === "Upcoming Bills"){
           const db = getDatabase();
           let uid = this.$store.state.userID;
