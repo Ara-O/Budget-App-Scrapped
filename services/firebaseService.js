@@ -43,18 +43,23 @@ export function registerUser(username, email, password, thisvalue) {
     });
 }
 
-export function userIsSignedIn(thisvalue) {
-  const auth = getAuth();
-  let that = thisvalue;
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      const uid = user.uid;
-      that.$store.commit("changeUserIDState", uid);
-      that.getRecordsData();
-    } else {
-      that.$router.push("/signup")
-    }
-  });
+export async function userIsSignedIn(thisvalue) {
+  let userState = new Promise((resolve) => {
+    const auth = getAuth();
+    let that = thisvalue;
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const uid = user.uid;
+        that.$store.commit("changeUserIDState", uid);
+        resolve(true)
+      } else {
+        that.$router.push("/signup")
+      }
+    });
+  })
+
+  let val = await userState
+  return val 
 }
 
 

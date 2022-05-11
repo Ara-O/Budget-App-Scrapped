@@ -20,6 +20,10 @@
 <script>
 export default {
   props: ["entries"],
+
+  mounted(){
+    console.log('all expenses')
+  }
 };
 </script>
 

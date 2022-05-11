@@ -2,6 +2,7 @@ export const state = () => ({
     userIsSignedIn: false,
     userID: '',
     userGoals: {},
+    usersCurrentIncome: 0,
 })
 
 export const mutations = {
@@ -14,4 +15,8 @@ export const mutations = {
     changeUserGoals(state, userGoals) {
         state.userGoals = userGoals;
     },
+
+    changeUsersCurrentIncome(state, usersIncome){
+        state.usersCurrentIncome= usersIncome
+    }
 }

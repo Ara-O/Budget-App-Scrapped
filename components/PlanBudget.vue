@@ -4,12 +4,18 @@
       class="plan-budget-items-section_item"
       v-for="budgetItem in budgetItems"
     >
-      <div class="plan-budget-items-section_item--indicator"></div>
+      <div class="plan-budget-items-section_item--indicator" @click="loadPage"></div>
       <div style="display: flex; flex-direction: column">
         <h5>{{ budgetItem.name }}</h5>
         <span>
           <span style="margin-top: 7px; font-size: 16px">$ </span>
-          <input type="number" min="0" :max="calculateBudgetMax" v-model="budgetItem.budget"/>
+          <input
+            type="number"
+            min="0"
+            :max="leeway"
+            v-model="budgetItem.budget"
+            @focus="loadPage"
+          />
         </span>
       </div>
     </div>
@@ -17,52 +23,44 @@
 </template>
 
 <script>
-import { getDatabase, ref, onValue } from "firebase/database";
+// import { getUserData } from '../services/firebaseService';
 
 export default {
   data() {
     return {
       budgetItems: [
-          {name: "Entertainment", budget: 0},
-          {name: "College", budget: 10},
-          {name: "Food", budget: 50}
-          ],
-      incomeLimit: 0
+        { name: "Entertainment", budget: 0 },
+        { name: "College", budget: 10 },
+        { name: "Food", budget: 50 },
+      ],
+      incomeLimit: 0,
+      leeway: 0
     };
   },
 
-  
-  computed: {
-      calculateBudgetMax(){
-          //Adding all the items in the budget store
-          let leeway = this.budgetItems.reduce((total, curr)=> Number(curr.budget) + total, 0);
-          console.log('all budget is ', leeway, this.incomeLimit)
-        
-          leeway = this.incomeLimit - leeway
-          console.log('leeway: ', leeway)
-      }
-  },
-
-
   methods: {
-      validateInput(){
-          let val = this.calculateBudgetMax;
-          console.log(val)
-      }
+    loadPage() {
+      //get user data
+      console.log(this.$store.state.usersCurrentIncome)
+    },
+
+    calculateBudgetMax(incomeLimit){
+      console.log("Income limit", incomeLimit)
+       //Adding all the items in the budget store
+      let leeway = this.budgetItems.reduce(
+        (total, curr) => Number(curr.budget) + total,
+        0
+      );
+      leeway = incomeLimit - leeway;
+      console.log("leeway: ", leeway);
+      this.leeway = leeway
+    }
   },
 
-  created() {
-    const db = getDatabase();
-    let uid = this.$store.state.userID;
-    let _this = this;
-    const userData = ref(db, "users/" + uid + "/userGoals/usersCurrentIncome");
-    onValue(userData, (snapshot) => {
-      console.log("not activting here")
-      const data = snapshot.val();
-      console.log("actal data", data)
-      _this.incomeLimit = data;
-    });
-  },
+  mounted(){
+    console.log("plan budget")
+    console.log(this.$store.state.usersCurrentIncome)
+  }
 };
 </script>
 
