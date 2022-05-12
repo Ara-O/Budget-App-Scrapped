@@ -11,7 +11,7 @@
     <div class="plan-budget-items-section">
       <h3>Plan Budget</h3>
       <section>
-        <PlanBudget></PlanBudget>
+        <PlanBudget :entries="entries" :entriesChanged="entriesChanged"></PlanBudget>
       </section>
     </div>
   </div>
@@ -19,7 +19,7 @@
 
 <script>
 export default {
-  props: ["entries"],
+  props: ["entries", "entriesChanged"],
 
   mounted(){
     console.log('all expenses')
@@ -51,6 +51,7 @@ export default {
   width: auto;
   height: 460px;
   justify-content: space-between;
+  position: relative;
 }
 
 .expenses-and-income-section {

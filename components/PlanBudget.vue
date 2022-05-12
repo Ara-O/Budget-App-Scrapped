@@ -4,7 +4,7 @@
       class="plan-budget-items-section_item"
       v-for="budgetItem in budgetItems"
     >
-      <div class="plan-budget-items-section_item--indicator" @click="loadPage"></div>
+      <div class="plan-budget-items-section_item--indicator"></div>
       <div style="display: flex; flex-direction: column">
         <h5>{{ budgetItem.name }}</h5>
         <span>
@@ -13,54 +13,125 @@
             type="number"
             min="0"
             :max="leeway"
-            v-model="budgetItem.budget"
-            @focus="loadPage"
+            v-model.number="budgetItem.budget"
+            @input="loadIncomeLeeway"
+            placeholder="0"
           />
         </span>
       </div>
     </div>
+
+    <div class="plan-budget-items-section_item">
+      <div class="plan-budget-items-section_item--indicator"></div>
+      <div style="display: flex; flex-direction: column">
+        <h5>Extras</h5>
+        <span>
+          <span style="margin-top: 7px; font-size: 16px">$ </span>
+          <input
+            type="number"
+            min="0"
+            :value="extra"
+            disabled
+            class="extra-input"
+          />
+        </span>
+      </div>
+    </div>
+    <BaseButton
+      class="plan-budget-save-btn"
+      :class="{ 'btn-error': budgetError, 'btn-success': budgetSuccess }"
+      @click="saveBudget"
+      >Save</BaseButton
+    >
   </article>
 </template>
 
 <script>
-// import { getUserData } from '../services/firebaseService';
+import BaseButton from "./Base/BaseButton.vue";
+// import { getUserBudgetPlan } from '../services/firebaseService';
+import {
+  storeUserBudgetPlan,
+  retrieveUserBudgetPlan,
+} from "../services/firebaseService";
 
 export default {
+  props: ["entries", "entriesChanged"],
   data() {
     return {
       budgetItems: [
         { name: "Entertainment", budget: 0 },
-        { name: "College", budget: 10 },
-        { name: "Food", budget: 50 },
+        { name: "College", budget: 0 },
+        { name: "Food", budget: 0 },
       ],
       incomeLimit: 0,
-      leeway: 0
+      leeway: 0,
+      budgetError: false,
+      budgetSuccess: false,
+      extra: 0,
     };
   },
 
+  watch: {
+    entriesChanged() {
+      console.log("entries have cahnged, but this time...its good :)");
+      let entriesLength = this.entries.length;
+      const budgetItemIndex = this.budgetItems.findIndex(
+        (data) => data.name === this.entries[entriesLength - 1].saveAs
+      );
+      this.budgetItems[budgetItemIndex].budget += Number(
+        this.entries[entriesLength - 1].income
+      );
+    },
+  },
+
   methods: {
-    loadPage() {
-      //get user data
-      console.log(this.$store.state.usersCurrentIncome)
+    loadIncomeLeeway() {
+      //get and store the leeway
+      this.calculateBudgetMax(this.$store.state.usersCurrentIncome);
+      this.calculateExtraIncome();
     },
 
-    calculateBudgetMax(incomeLimit){
-      console.log("Income limit", incomeLimit)
-       //Adding all the items in the budget store
+    calculateExtraIncome() {
+      this.extra = this.leeway;
+    },
+
+    calculateBudgetMax(incomeLimit) {
+      //Adding all the items in the budget store
       let leeway = this.budgetItems.reduce(
         (total, curr) => Number(curr.budget) + total,
         0
       );
       leeway = incomeLimit - leeway;
-      console.log("leeway: ", leeway);
-      this.leeway = leeway
-    }
-  },
+      this.leeway = leeway;
+    },
 
-  mounted(){
-    console.log("plan budget")
-    console.log(this.$store.state.usersCurrentIncome)
-  }
+    saveBudget() {
+      if (this.leeway < 0) {
+        this.budgetError = true;
+
+        setInterval(() => {
+          this.budgetError = false;
+        }, 3000);
+      } else {
+        storeUserBudgetPlan(this, this.budgetItems).then((res) => {
+          this.budgetSuccess = true;
+          setInterval(() => {
+            this.budgetSuccess = false;
+          }, 3000);
+        });
+      }
+    },
+  },
+  mounted() {
+    retrieveUserBudgetPlan(this)
+      .then((data) => {
+        this.budgetItems = data;
+        this.loadIncomeLeeway();
+        console.log("success");
+      })
+      .catch((err) => console.log(err));
+  },
+  components: { BaseButton },
 };
 </script>
 
@@ -68,8 +139,11 @@ export default {
 article {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-around;
-  row-gap: 30px;
+  justify-content: space-between;
+  grid-row-gap: 17px;
+  row-gap: 33px;
+  align-items: center;
+  width: 455px;
 }
 .plan-budget-items-section_item {
   height: 100px;
@@ -97,11 +171,35 @@ article {
   outline: none;
   font-family: "Poppins";
 }
+
+.extra-input {
+  width: 47px;
+  border-width: 0px 0px 2px 0px;
+  outline: none;
+  font-family: "Poppins";
+}
 .plan-budget-items-section_item h5 {
   font-weight: 400;
 }
 
 ::-webkit-inner-spin-button {
   display: none;
+}
+
+.plan-budget-save-btn {
+  position: absolute;
+  bottom: 19px;
+  right: 27px;
+  width: 86px;
+  box-shadow: 0px 1px 1px #3c3c3c;
+  background: #768b79;
+}
+
+.btn-error {
+  background: rgba(181, 20, 20, 0.659);
+}
+
+.btn-success {
+  background: #468c5f;
 }
 </style>

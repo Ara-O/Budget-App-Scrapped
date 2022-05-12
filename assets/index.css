@@ -51,3 +51,11 @@ h3 {
     font-weight: 400;
     font-size: 27px;
   }
+
+  .plan-budget-section {
+    display: flex;
+    width: auto;
+    height: 460px;
+    justify-content: space-between;
+  }
+  

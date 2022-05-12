@@ -82,3 +82,42 @@ export async function getUserData(thisvalue) {
 
   return userData;
 }
+
+export async function storeUserBudgetPlan(thisvalue, budgetplan){
+  let that = thisvalue;
+  let uid = that.$store.state.userID;
+  let receiveBudgetPlan = new Promise(resolve => {
+    const db = getDatabase();
+    set(ref(db, 'users/' + uid +"/budgetPlans"), budgetplan)
+
+    resolve(true)
+  });
+
+  let userBudget = await receiveBudgetPlan;
+
+  return userBudget
+}
+
+export async function retrieveUserBudgetPlan(thisvalue){
+  let that = thisvalue
+
+  //Promise that resolves when the data from the user has been retrieved
+  let retrieveUserData = new Promise((resolve, reject) => {
+    const db = getDatabase();
+    const uid = that.$store.state.userID;
+    const userData = ref(db, 'users/' + uid + '/budgetPlans');
+    onValue(userData, (snapshot) => {
+      const data = snapshot.val();
+      if(data){
+        resolve(data);
+      }else {
+        reject("There has been error/no data has been found")
+      }
+    });
+  });
+
+  let userData = await retrieveUserData
+
+  return userData
+
+}

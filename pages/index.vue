@@ -5,7 +5,8 @@
         :userName="usersName"
         @successfulEntry="getRecordsData"
       ></AddExpenses>
-      <AllExpenses :entries="userEntries" v-if="userDataLoaded"></AllExpenses>
+      <AllExpenses :entries="userEntries" :entriesChanged="userEntriesChanged" v-if="userDataLoaded" ></AllExpenses>
+      <div v-else class="plan-budget-section"></div>
     </section>
 
     <section class="section-right">
@@ -47,7 +48,8 @@ export default {
       userEntries: [],
       usersName: "",
       userBills: [],
-      userDataLoaded: false
+      userDataLoaded: false,
+      userEntriesChanged: false,
     };
   },
 
@@ -63,6 +65,7 @@ export default {
       this.userBills = [];
       let _this = this;
       getUserData(this).then((val) => {
+        console.log(val)
         _this.usersCurrentIncome = val.userGoals.usersCurrentIncome;
         _this.usersName = val.username;
         _this.$store.commit("changeUsersCurrentIncome", _this.usersCurrentIncome);
@@ -73,14 +76,17 @@ export default {
               _this.userEntries.push(val.entries.records[id]);
             }
           }
+        }
 
-          for (const id in val.entries.upcomingBills) {
+        if(val?.entries?.upcomingBills){
+            for (const id in val.entries.upcomingBills) {
             _this.userBills.push(val.entries.upcomingBills[id]);
           }
         }
 
         //Only set the user data loaded to true when getRecordsData has retrieved all the data
         this.userDataLoaded = true;
+        this.userEntriesChanged = !this.userEntriesChanged;
       });
     },
   },
@@ -90,6 +96,8 @@ export default {
     userIsSignedIn(this).then((val)=> {
       if(val){
         this.getRecordsData();
+      }else{
+        console.log("no user found")
       }
     });
   
