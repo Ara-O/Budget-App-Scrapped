@@ -1,6 +1,11 @@
 <template>
   <div class="add-expenses-section">
-    <h3>Welcome {{ userName }} - Add Expense or Income</h3>
+    <div>
+      <h3>Welcome {{ userName }} - Add Expense or Income</h3>
+      <!-- <h6 style="color: white; font-weight: 300; margin-top: 4px">
+        Note: If income is an expense, input a negative number
+      </h6> -->
+    </div>
     <article class="add-expenses-section_inputs">
       <input
         type="text"
@@ -121,14 +126,14 @@ export default {
   methods: {
     successfulEntry() {
       this.alert = true;
-      this.entryData = {
+      (this.entryData = {
         description: "",
         income: null,
         budgetUnder: "Budget Under",
         saveAs: "Save As",
-      },
-      // Updating the index.vue
-      this.$emit("successfulEntry");
+      }),
+        // Updating the index.vue
+        this.$emit("successfulEntry");
       window.setTimeout(() => {
         this.alert = false;
       }, 2000);
@@ -138,14 +143,20 @@ export default {
       const db = getDatabase();
       const uid = this.$store.state.userID;
       const _this = this;
-      const userData = ref(db, "users/" + uid + "/userGoals/usersCurrentIncome");
+      const userData = ref(
+        db,
+        "users/" + uid + "/userGoals/usersCurrentIncome"
+      );
       let newCurrentIncome;
       onValue(userData, (snapshot) => {
         const data = snapshot.val();
         newCurrentIncome = data + Number(_this.entryData.income);
       });
 
-      set(ref(db, "users/" + uid + "/userGoals/usersCurrentIncome"), newCurrentIncome);
+      set(
+        ref(db, "users/" + uid + "/userGoals/usersCurrentIncome"),
+        newCurrentIncome
+      );
     },
 
     validateEntry() {
@@ -182,14 +193,20 @@ export default {
 
     submitEntry() {
       if (this.validateEntry()) {
-        if(this.entryData.budgetUnder === "Upcoming Bills"){
+        if (this.entryData.budgetUnder === "Upcoming Bills") {
           const db = getDatabase();
           let uid = this.$store.state.userID;
           let _this = this;
-          push(ref(db, "users/" + uid + "/entries/upcomingBills"), _this.entryData);
+          push(
+            ref(db, "users/" + uid + "/entries/upcomingBills"),
+            _this.entryData
+          );
         }
 
-        if(this.entryData.budgetUnder === "Income" || this.entryData.budgetUnder === "Expenses"){
+        if (
+          this.entryData.budgetUnder === "Income" ||
+          this.entryData.budgetUnder === "Expenses"
+        ) {
           const db = getDatabase();
           let uid = this.$store.state.userID;
           let _this = this;
@@ -205,6 +222,10 @@ export default {
 
 <style scoped>
 @import url("~/assets/styles.css");
+</style>
+
+<style scoped>
+@import url("../assets/index.css");
 </style>
 
 <style scoped>

@@ -1,14 +1,15 @@
 <template>
-        <div class="arrange-sign-up">
+        <div class="arrange-sign-up arrange-sign-up-one">
             <h3 class="arrange-sign-up_title">Let's start saving up money</h3>
-            <div class="horizontal-link"></div>
+            <hr class="horizontal-link-hr">
             <h5>How much do you currently have?</h5>
             <IncomeRangeSelector @emit-user-input="storeUserCurrentIncome"></IncomeRangeSelector>
             <h5>How much do you want to save?</h5>
             <IncomeRangeSelector @emit-user-input="storeUserDesiredIncome"></IncomeRangeSelector>
             <BaseButton class="base-button" @click="continueToNextSection">Continue</BaseButton>
+            <nuxtLink to="/login"><h5 class="already-has-account">I already have an account</h5></nuxtLink>
         </div>
-</template>
+</template> 
 
 
 <script>
@@ -18,12 +19,6 @@ export default {
     emits: ["continue"],
 
     components: { IncomeRangeSelector, BaseButton },
-
-    head() {
-        return {
-            title: "Budget-app sign-up page"
-        };
-    },
     
     data(){
         return {

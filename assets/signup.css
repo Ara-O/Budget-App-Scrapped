@@ -29,34 +29,95 @@
 }
 
 
-.arrange-sign-up > h5, .arrange-sign-up > label{
+.arrange-sign-up>h5,
+.arrange-sign-up>label {
     font-weight: 300;
     font-size: 15px;
 }
 
-.arrange-sign-up_title{
+.arrange-sign-up_title {
     font-weight: 500;
     font-size: 20px
 }
 
-.horizontal-link{
+.horizontal-link {
     height: 1px;
     width: 100px;
     background-color: #353535;
-    border-radius: 25px;   
+    border-radius: 25px;
+}
+.horizontal-link-hr {
+    width: 100px;
+    background-color: #353535;
+    height: 1px;
+    border: none;
 }
 
-.base-button{
+.already-has-account{
+    font-weight: 400;
+    color: black;
+    text-decoration: underline;
+    text-decoration-color: #393B3A;
+    transition: all 250ms linear;
+}
+
+.already-has-account:hover{
+    text-decoration-color: #468c5f;
+    color: green;
+}
+
+.base-button {
     position: absolute;
     bottom: 20px;
     right: 30px
 }
 
-#full-name, #email-address, #password{
+#username,
+#email-address,
+#password {
     width: 250px;
     height: 40px;
     border-radius: 3px;
     border: 0px;
     box-shadow: 1px 2px 3px rgb(171 171 171 / 58%), -1px -1px 2px #f3f3f3bf;
     text-align: center;
+    box-sizing: border-box;
+    padding: 0px 20px;
+}
+
+@media (max-width: 460px) {
+    .arrange-sign-up_title {
+        font-size: 17px;
+    }
+
+    .arrange-sign-up>h5,
+    .arrange-sign-up>label {
+        font-size: 14px;
+    }
+
+    .range-section>h5 {
+        font-size: 39px;
+    }
+
+    .range-section>input {
+        font-size: 37px;
+        font-weight: 600;
+    }
+
+    .base-button {
+        height: 40px;
+        font-size: 12px;
+        border-width: 0px;
+        border-radius: 5px;
+        background-color: #468c5f;
+        width: 94px;
+    }
+
+    .arrange-sign-up {
+        padding: 48px 0px 48px 0px;
+    }
+
+    .arrange-sign-up-one{
+        padding: 55px 0px 77px 0px
+    }
 }

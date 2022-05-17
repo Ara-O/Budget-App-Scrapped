@@ -5,19 +5,13 @@
         :userName="usersName"
         @successfulEntry="getRecordsData"
       ></AddExpenses>
-      <AllExpenses :entries="userEntries" :entriesChanged="userEntriesChanged" v-if="userDataLoaded" ></AllExpenses>
+      <AllExpenses :entries="userEntries" :entriesChanged="userEntriesChanged" :usersCurrentIncome="usersCurrentIncome" v-if="userDataLoaded" ></AllExpenses>
       <div v-else class="plan-budget-section"></div>
     </section>
 
     <section class="section-right">
       <div class="section-right-top">
-        <div
-          class="current-income-section"
-          :class="{ 'current-income-section_negative': usersCurrentIncome < 0 }"
-        >
-          <h3>Current Income</h3>
-          <h2>${{ usersCurrentIncome }}</h2>
-        </div>
+      <UsersCurrentIncome :usersCurrentIncome="usersCurrentIncome"></UsersCurrentIncome>
       </div>
       <AllBills :bills="userBills"></AllBills>
     </section>

@@ -1,11 +1,14 @@
 <template>
   <section class="range-section">
     <h5 class="range-section_dollar_sign">$</h5>
-    <input type="number" v-model="userInput" :style="{width: calculateInputWidth}" placeholder="0" @input="validate" ref="userInput">
-    <!-- <div class="range-arrows">
-      <img src="~/assets/images/triangle.png" alt="Up arrow" class="up-arrow" />
-      <img src="~/assets/images/triangle.png" alt="Up arrow" class="down-arrow" />
-    </div> -->
+    <input
+      type="number"
+      v-model.num="userInput"
+      :style="{ width: calculateInputWidth }"
+      placeholder="0"
+      @input="validate"
+      ref="userInput"
+    />
   </section>
 </template>
 
@@ -21,88 +24,39 @@ export default {
   },
 
   methods: {
-    validate(){
-       if(Number(this.userInput) < 0){
-         this.$refs.userInput.style.color = "darkred";
-         this.$refs.userInput.style.borderColor = "darkred";
-         this.accurateData = false;
-       }else {
-         this.$refs.userInput.style.color = "#333333"
-         this.$refs.userInput.style.borderColor = "#333333"
-         this.accurateData = true;
-    }
-    if(this.accurateData){
-      this.$emit("emit-user-input", this.userInput)
-    }
-    }
+    validate() {
+      if(this.userInput.trim()=== ''){
+        this.$emit("emit-user-input", "0");
+      }else{
+        this.$emit("emit-user-input", this.userInput);
+      }
+    },
   },
 
   computed: {
-    calculateInputWidth(){
-      if(this.userInput.length == '')
-        return `30px`;
+    calculateInputWidth() {
+      if (this.userInput.length == "") return `30px`;
 
-      return `${this.userInput.length * 30}px`
-    }
-  }
+      return `${this.userInput.length * 30}px`;
+    },
+  },
+
+  mounted() {
+    let invalidChars = ["-", "+", "e"];
+
+    document.querySelector("input").addEventListener("keydown", function (e) {
+      if (invalidChars.includes(e.key)) {
+        e.preventDefault();
+      }
+    });
+  },
 };
 </script>
 
 <style scoped>
-.range-section {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  column-gap: 5px;
-}
+@import url("../../assets/base_income_selector.css");
+</style>
 
-.range-section > input {
-  font-size: 43px;
-  font-weight: 600;
-  color: #333333;
-  max-width: 150px;
-  border-width: 0px 0px 2px 0px;
-  text-align: center;
-  outline: none;
-  border-color: #989898;
-  font-family: 'Poppins'
-}
-
-.range-section > h5{
-    font-weight: 600;
-    font-size: 45px;
-    color: #333333;
-    margin-top: -3px
-}
-
-.range-arrows{
-    display: none;
-    flex-direction: column;
-    row-gap: 7px;
-}
-
-.up-arrow, .down-arrow {
-  width: 14px;
-  cursor: pointer;
-  filter: opacity(0.6);
-}
-
-.up-arrow:hover, .down-arrow:hover{
-  filter: opacity(1);
-}
-
-.down-arrow{
-  transform: rotate(180deg)
-}
-
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-::placeholder{
-  color: #545454
-}
-
+<style scoped>
+@import url("../../assets/signup.css");
 </style>

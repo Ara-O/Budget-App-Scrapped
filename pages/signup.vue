@@ -6,6 +6,12 @@
 
 <script>
 export default {
+  head(){
+    return{
+      title: "Sign up"
+    }
+  },
+
   data() {
     return {
       currentComponent: "StartSavingMoney",
@@ -14,7 +20,7 @@ export default {
 
   methods: {
     moveOn() {
-      this.currentComponent = "SignUserIn";
+      this.currentComponent = "RegisterUser";
     },
   },
 };

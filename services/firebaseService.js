@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, createUserWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
 import { getDatabase, ref, set, onValue } from "firebase/database";
 
 const firebaseConfig = {
@@ -43,6 +43,24 @@ export function registerUser(username, email, password, thisvalue) {
     });
 }
 
+export async function logUserIn(email, password) {
+  let userData = new Promise((resolve) => {
+    const auth = getAuth();
+    signInWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      const user = userCredential.user;
+      resolve(user)
+    })
+    .catch((error) => {
+      alert(error.message)
+    });
+  })
+
+  let userDataFound = await userData;
+
+  return userDataFound
+}
+
 export async function userIsSignedIn(thisvalue) {
   let userState = new Promise((resolve) => {
     const auth = getAuth();
@@ -59,8 +77,10 @@ export async function userIsSignedIn(thisvalue) {
   })
 
   let val = await userState
-  return val 
+  return val
 }
+
+
 
 
 export async function getUserData(thisvalue) {
@@ -83,12 +103,12 @@ export async function getUserData(thisvalue) {
   return userData;
 }
 
-export async function storeUserBudgetPlan(thisvalue, budgetplan){
+export async function storeUserBudgetPlan(thisvalue, budgetplan) {
   let that = thisvalue;
   let uid = that.$store.state.userID;
   let receiveBudgetPlan = new Promise(resolve => {
     const db = getDatabase();
-    set(ref(db, 'users/' + uid +"/budgetPlans"), budgetplan)
+    set(ref(db, 'users/' + uid + "/budgetPlans"), budgetplan)
 
     resolve(true)
   });
@@ -98,7 +118,7 @@ export async function storeUserBudgetPlan(thisvalue, budgetplan){
   return userBudget
 }
 
-export async function retrieveUserBudgetPlan(thisvalue){
+export async function retrieveUserBudgetPlan(thisvalue) {
   let that = thisvalue
 
   //Promise that resolves when the data from the user has been retrieved
@@ -108,9 +128,9 @@ export async function retrieveUserBudgetPlan(thisvalue){
     const userData = ref(db, 'users/' + uid + '/budgetPlans');
     onValue(userData, (snapshot) => {
       const data = snapshot.val();
-      if(data){
+      if (data) {
         resolve(data);
-      }else {
+      } else {
         reject("There has been error/no data has been found")
       }
     });

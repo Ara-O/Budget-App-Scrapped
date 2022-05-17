@@ -3,6 +3,7 @@
     <div class="expenses-and-income-section">
       <h3>Expenses and Income</h3>
       <hr />
+      <users-current-income :usersCurrentIncome="usersCurrentIncome"></users-current-income>
       <span class="expenses-and-income-section_item" v-for="entry in entries">
         <h5 :title="entry.description">{{ entry.description }}</h5>
         <h5>$ {{ entry.income }}</h5>
@@ -18,8 +19,10 @@
 </template>
 
 <script>
+import UsersCurrentIncome from './UsersCurrentIncome.vue';
 export default {
-  props: ["entries", "entriesChanged"],
+  components: { UsersCurrentIncome },
+  props: ["entries", "entriesChanged", "usersCurrentIncome"],
 
   mounted(){
     console.log('all expenses')
@@ -117,4 +120,10 @@ hr {
   margin: 15px 0px 24px;
   border-radius: 15px;
 }
+</style>
+
+<style scoped>
+
+@import url("../assets/index.css")
+
 </style>

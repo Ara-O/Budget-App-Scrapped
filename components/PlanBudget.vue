@@ -1,5 +1,5 @@
 <template>
-  <article>
+  <article class="plan-budget-article">
     <div
       class="plan-budget-items-section_item"
       v-for="budgetItem in budgetItems"
@@ -135,6 +135,8 @@ export default {
 };
 </script>
 
+
+
 <style scoped>
 article {
   display: flex;
@@ -202,4 +204,8 @@ article {
 .btn-success {
   background: #468c5f;
 }
+</style>
+
+<style scoped>
+@import url("../assets/index.css");
 </style>
