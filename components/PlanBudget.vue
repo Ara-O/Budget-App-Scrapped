@@ -11,7 +11,6 @@
           <span style="margin-top: 7px; font-size: 16px">$ </span>
           <input
             type="number"
-            min="0"
             :max="leeway"
             v-model.number="budgetItem.budget"
             @input="loadIncomeLeeway"
@@ -27,13 +26,7 @@
         <h5>Extras</h5>
         <span>
           <span style="margin-top: 7px; font-size: 16px">$ </span>
-          <input
-            type="number"
-            min="0"
-            :value="extra"
-            disabled
-            class="extra-input"
-          />
+          <input type="number" :value="extra" disabled class="extra-input" />
         </span>
       </div>
     </div>
@@ -55,14 +48,12 @@ import {
 } from "../services/firebaseService";
 
 export default {
+  // !We want - If User selects income, we show them the save Under bar. If they choose expense, we show them the Take from bar
+  //If what they want to take out from is too small, ask them if they want to get money from extras
   props: ["entries", "entriesChanged"],
   data() {
     return {
-      budgetItems: [
-        { name: "Entertainment", budget: 0 },
-        { name: "College", budget: 0 },
-        { name: "Food", budget: 0 },
-      ],
+      budgetItems: [],
       incomeLimit: 0,
       leeway: 0,
       budgetError: false,
@@ -72,15 +63,37 @@ export default {
   },
 
   watch: {
+    // If user adds another expense
     entriesChanged() {
-      console.log("entries have cahnged, but this time...its good :)");
-      let entriesLength = this.entries.length;
-      const budgetItemIndex = this.budgetItems.findIndex(
-        (data) => data.name === this.entries[entriesLength - 1].saveAs
-      );
-      this.budgetItems[budgetItemIndex].budget += Number(
-        this.entries[entriesLength - 1].income
-      );
+      console.log("entries have changed = ", this.entries);
+
+      // let entriesLength = this.entries.length;
+      //   const budgetItemIndex = this.budgetItems.findIndex(
+      //     (data) => data.name === this.entries[entriesLength - 1].budgetUnder
+      //   );
+
+      //   this.budgetItems[budgetItemIndex].budget += Number(
+      //     this.entries[entriesLength - 1].income
+      //   );
+
+      //   this.loadIncomeLeeway();
+      //   // making sure individual budget items cant be less than 0
+      //   this.budgetItems[budgetItemIndex].budget < 0
+      //     ? (this.budgetItems[budgetItemIndex].budget = 0)
+      //     : (this.budgetItems[budgetItemIndex].budget += this.leeway);
+
+      //   //checking to make sure that if the current income is less than 0, all the budget items will be 0
+      //   if (this.$store.state.usersCurrentIncome < 0) {
+      //     this.budgetItems.forEach((item) => (item.budget = 0));
+      //   }
+
+
+      // storeUserBudgetPlan(this, this.budgetItems).then((res) => {
+      //   this.budgetSuccess = true;
+      //   setInterval(() => {
+      //     this.budgetSuccess = false;
+      //   }, 3000);
+      // });
     },
   },
 
@@ -92,7 +105,11 @@ export default {
     },
 
     calculateExtraIncome() {
-      this.extra = this.leeway;
+      if (this.leeway > 0) {
+        this.extra = this.leeway;
+      } else {
+        this.extra = 0;
+      }
     },
 
     calculateBudgetMax(incomeLimit) {
@@ -121,15 +138,30 @@ export default {
         });
       }
     },
+
+    generateBudgetItems() {
+      let budgetItem = [];
+      let budget = this.$store.state.budgetItems;
+      budget.forEach((item) => {
+        budgetItem.push({ name: item, budget: 0 });
+      });
+
+      this.budgetItems = budgetItem;
+    },
   },
+
+  computed: {},
   mounted() {
     retrieveUserBudgetPlan(this)
       .then((data) => {
-        this.budgetItems = data;
-        this.loadIncomeLeeway();
-        console.log("success");
+        console.log(data)
+        // this.budgetItems = data
       })
-      .catch((err) => console.log(err));
+      .catch((err) =>{
+        this.generateBudgetItems();
+        console.log("there is no data")
+      });
+    this.loadIncomeLeeway();
   },
   components: { BaseButton },
 };
@@ -149,7 +181,7 @@ article {
 }
 .plan-budget-items-section_item {
   height: 100px;
-  width: auto;
+  width: 195px;
   background: white;
   border-radius: 6px;
   display: flex;
@@ -204,8 +236,4 @@ article {
 .btn-success {
   background: #468c5f;
 }
-</style>
-
-<style scoped>
-@import url("../assets/index.css");
 </style>

@@ -18,6 +18,3 @@ export default {
 @import url("~/assets/styles.css");
 </style>
 
-<style scoped>
-@import url("../assets/index.css");
-</style>

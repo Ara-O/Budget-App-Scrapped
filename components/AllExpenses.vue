@@ -3,10 +3,10 @@
     <div class="expenses-and-income-section">
       <h3>Expenses and Income</h3>
       <hr />
-      <users-current-income :usersCurrentIncome="usersCurrentIncome"></users-current-income>
+      <users-current-income :usersCurrentIncome="usersCurrentIncome" class="users-current-income-mobile"></users-current-income>
       <span class="expenses-and-income-section_item" v-for="entry in entries">
         <h5 :title="entry.description">{{ entry.description }}</h5>
-        <h5>$ {{ entry.income }}</h5>
+        <h5 v-html="generateAmount(entry.amount)"></h5>
       </span>
     </div>
     <div class="plan-budget-items-section">
@@ -26,6 +26,16 @@ export default {
 
   mounted(){
     console.log('all expenses')
+  },
+  
+  methods: {
+    generateAmount(amount){
+      if( amount > 0 ){
+        return `$ ${amount }`
+      }else {
+        return `-$ ${Math.abs(amount)}`
+      }
+    }
   }
 };
 </script>
@@ -42,6 +52,7 @@ export default {
   padding: 30px;
   flex-direction: column;
   row-gap: 25px;
+  overflow: auto;
 }
 
 .plan-budget-items-section h3 {
@@ -120,10 +131,4 @@ hr {
   margin: 15px 0px 24px;
   border-radius: 15px;
 }
-</style>
-
-<style scoped>
-
-@import url("../assets/index.css")
-
 </style>

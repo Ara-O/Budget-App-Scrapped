@@ -15,49 +15,44 @@
         placeholder="Description"
         v-model="entryData.description"
       />
+
       <input
         type="number"
-        name="Income"
+        name="Amount"
         class="input-income"
         :class="{ error: errorMatch['income-error'] }"
-        placeholder="Income"
-        v-model="entryData.income"
+        placeholder="Amount"
+        v-model="entryData.amount"
       />
+
       <select
-        type="number"
-        name="Income"
         class="input-budget-under"
         :class="{
-          'input-active': selectedBudgetUnderClass,
-          error: errorMatch['budget-under-error'],
-        }"
-        placeholder="Income"
-        v-model="entryData.budgetUnder"
-      >
-        <option value="Budget Under" selected disabled hidden>
-          Budget Under
-        </option>
-        <option value="Income">Income</option>
-        <option value="Expenses">Expenses</option>
-        <option value="Upcoming Bills">Upcoming Bills</option>
-      </select>
-      <select
-        type="number"
-        name="Income"
-        class="input-budget-under"
-        :class="{
-          'input-active': selectedSaveAsClass,
+          'input-active': entryData.saveAs !== 'Save As',
           error: errorMatch['save-as-error'],
         }"
-        placeholder="Income"
         v-model="entryData.saveAs"
       >
+        <option value="Save As" selected disabled hidden>Save As</option>
+        <option value="Income">Income</option>
+        <option value="Expense">Expense</option>
+        <option value="Upcoming Bills">Upcoming Bills</option>
+      </select>
+
+      <select
+        class="input-budget-under"
+        :class="{
+          error: errorMatch['add-to-error'],
+          'input-active': entryData.addTo !== 'Add To',
+        }"
+        v-model="entryData.addTo"
+        v-if="entryData.saveAs === 'Income'"
+      >
         <option
-          v-for="budgetItem in budgetItems"
-          :disabled="budgetItem === 'Save As'"
-          :selected="budgetItem === 'Save As'"
-          :hidden="budgetItem === 'Save As'"
           :value="budgetItem"
+          v-for="(budgetItem, index) in budgetItems"
+          :selected="budgetItem === 'Add To'"
+          :disabled="index === 0"
         >
           {{ budgetItem }}
         </option>
@@ -86,18 +81,20 @@ export default {
   emits: ["successfulEntry"],
   data() {
     return {
-      budgetItems: ["Save As", "Entertainment", "College", "Rent", "Other"],
+      budgetItems: this.$store.state.budgetItems,
+
       entryData: {
         description: "",
-        income: null,
-        budgetUnder: "Budget Under",
+        amount: null,
         saveAs: "Save As",
+        addTo: "Add To",
       },
+
       errorMatch: {
         "description-error": false,
-        "income-error": false,
-        "budget-under-error": false,
+        "amount-error": false,
         "save-as-error": false,
+        "add-to": false,
       },
 
       alert: false,
@@ -105,32 +102,14 @@ export default {
     };
   },
 
-  computed: {
-    selectedBudgetUnderClass() {
-      if (this.entryData.budgetUnder === "Budget Under") {
-        return false;
-      } else {
-        return true;
-      }
-    },
-
-    selectedSaveAsClass() {
-      if (this.entryData.saveAs === "Save As") {
-        return false;
-      } else {
-        return true;
-      }
-    },
-  },
-
   methods: {
     successfulEntry() {
       this.alert = true;
       (this.entryData = {
         description: "",
-        income: null,
-        budgetUnder: "Budget Under",
+        amount: null,
         saveAs: "Save As",
+        addTo: "Add To",
       }),
         // Updating the index.vue
         this.$emit("successfulEntry");
@@ -140,23 +119,23 @@ export default {
     },
 
     updateCurrentIncome() {
-      const db = getDatabase();
-      const uid = this.$store.state.userID;
-      const _this = this;
-      const userData = ref(
-        db,
-        "users/" + uid + "/userGoals/usersCurrentIncome"
-      );
-      let newCurrentIncome;
-      onValue(userData, (snapshot) => {
-        const data = snapshot.val();
-        newCurrentIncome = data + Number(_this.entryData.income);
-      });
+      // const db = getDatabase();
+      // const uid = this.$store.state.userID;
+      // const _this = this;
+      // const userData = ref(
+      //   db,
+      //   "users/" + uid + "/userGoals/usersCurrentIncome"
+      // );
+      // let newCurrentIncome;
+      // onValue(userData, (snapshot) => {
+      //   const data = snapshot.val();
+      //   newCurrentIncome = data + Number(_this.entryData.amount);
+      // });
 
-      set(
-        ref(db, "users/" + uid + "/userGoals/usersCurrentIncome"),
-        newCurrentIncome
-      );
+      // set(
+      //   ref(db, "users/" + uid + "/userGoals/usersCurrentIncome"),
+      //   newCurrentIncome
+      // );
     },
 
     validateEntry() {
@@ -167,25 +146,28 @@ export default {
         this.errorMatch["description-error"] = false;
       }
 
-      if (this.entryData.income === null) {
-        this.errorMatch["income-error"] = true;
+      if (this.entryData.amount === null) {
+        this.errorMatch["amount-error"] = true;
         return false;
       } else {
-        this.errorMatch["income-error"] = false;
+        this.errorMatch["amount-error"] = false;
       }
 
-      if (this.entryData.budgetUnder === "Budget Under") {
-        this.errorMatch["budget-under-error"] = true;
+      if (
+        this.entryData.addTo === "Add To" &&
+        this.entryData.saveAs === "Income"
+      ) {
+        this.errorMatch["add-to-error"] = true;
         return false;
       } else {
-        this.errorMatch["budget-under-error"] = false;
+        this.errorMatch["add-to-error"] = false;
       }
 
       if (this.entryData.saveAs === "Save As") {
-        this.errorMatch["save-as-error"] = true;
+        this.errorMatch["add-to-error"] = true;
         return false;
       } else {
-        this.errorMatch["save-as-error"] = false;
+        this.errorMatch["add-to-error"] = false;
       }
 
       return true;
@@ -193,26 +175,26 @@ export default {
 
     submitEntry() {
       if (this.validateEntry()) {
-        if (this.entryData.budgetUnder === "Upcoming Bills") {
-          const db = getDatabase();
-          let uid = this.$store.state.userID;
-          let _this = this;
-          push(
-            ref(db, "users/" + uid + "/entries/upcomingBills"),
-            _this.entryData
-          );
+        if (this.entryData.saveAs === "Income") {
+          this.entryData.amount = Math.abs(this.entryData.amount);
+        } else if (this.entryData.saveAs === "Expense") {
+          this.entryData.addTo = "Expenses Incurred";
+          this.entryData.amount > 0
+            ? (this.entryData.amount = `-${this.entryData.amount}`)
+            : 0;
+        } else if (this.entryData.saveAs === "Upcoming Bills") {
+          this.entryData.amount = Math.abs(this.entryData.amount);
+          this.entryData.addTo = "Upcoming Bills";
         }
 
-        if (
-          this.entryData.budgetUnder === "Income" ||
-          this.entryData.budgetUnder === "Expenses"
-        ) {
-          const db = getDatabase();
-          let uid = this.$store.state.userID;
-          let _this = this;
-          push(ref(db, "users/" + uid + "/entries/records"), _this.entryData);
-          this.updateCurrentIncome();
-        }
+        console.log(this.entryData);
+
+        const db = getDatabase();
+        let uid = this.$store.state.userID;
+        let _this = this;
+        push(ref(db, "users/" + uid + "/entries/records"), _this.entryData);
+        this.updateCurrentIncome();
+
         this.successfulEntry();
       }
     },
@@ -220,13 +202,9 @@ export default {
 };
 </script>
 
-<style scoped>
+<!-- <style scoped>
 @import url("~/assets/styles.css");
-</style>
-
-<style scoped>
-@import url("../assets/index.css");
-</style>
+</style> -->
 
 <style scoped>
 .add-expenses-section {

@@ -104,8 +104,10 @@ export async function getUserData(thisvalue) {
 }
 
 export async function storeUserBudgetPlan(thisvalue, budgetplan) {
+  console.log("budget plan", budgetplan)
   let that = thisvalue;
   let uid = that.$store.state.userID;
+  
   let receiveBudgetPlan = new Promise(resolve => {
     const db = getDatabase();
     set(ref(db, 'users/' + uid + "/budgetPlans"), budgetplan)

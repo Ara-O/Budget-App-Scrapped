@@ -3,6 +3,14 @@ export const state = () => ({
     userID: '',
     userGoals: {},
     usersCurrentIncome: 0,
+    budgetItems: [
+        "Add To",
+        "Entertainment",
+        "College",
+        "Food",
+        "Utilities",
+        "Savings",
+      ],
 })
 
 export const mutations = {

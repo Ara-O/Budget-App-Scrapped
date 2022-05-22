@@ -38,7 +38,8 @@ export default {
 
   data() {
     return {
-      usersCurrentIncome: "",
+      usersCurrentIncome: 0,
+      usersCurrentIncome_generated: 0,
       userEntries: [],
       usersName: "",
       userBills: [],
@@ -59,7 +60,6 @@ export default {
       this.userBills = [];
       let _this = this;
       getUserData(this).then((val) => {
-        console.log(val)
         _this.usersCurrentIncome = val.userGoals.usersCurrentIncome;
         _this.usersName = val.username;
         _this.$store.commit("changeUsersCurrentIncome", _this.usersCurrentIncome);
@@ -67,20 +67,24 @@ export default {
         if (val?.entries?.records) {
           if (Object.keys(val.entries.records).length > 0) {
             for (const id in val.entries.records) {
-              _this.userEntries.push(val.entries.records[id]);
+              //Only showing expenses and income and storing the bills in the userBills array
+              if(val.entries.records[id].saveAs !== "Upcoming Bills"){
+                // User income that is generated from the expenses and the income
+                _this.usersCurrentIncome_generated += Number(val.entries.records[id].amount);
+                 _this.userEntries.push(val.entries.records[id]);
+              } else {
+                 _this.userBills.push(val.entries.records[id]);
+              }
+              // The generated income is added to the user's initial income
+              _this.usersCurrentIncome +=  _this.usersCurrentIncome_generated;
+              _this.usersCurrentIncome_generated = 0;
             }
           }
         }
 
-        if(val?.entries?.upcomingBills){
-            for (const id in val.entries.upcomingBills) {
-            _this.userBills.push(val.entries.upcomingBills[id]);
-          }
-        }
-
         //Only set the user data loaded to true when getRecordsData has retrieved all the data
-        this.userDataLoaded = true;
-        this.userEntriesChanged = !this.userEntriesChanged;
+         this.userDataLoaded = true;
+        // this.userEntriesChanged = !this.userEntriesChanged;
       });
     },
   },
@@ -101,9 +105,5 @@ export default {
 </script>
 
 <style scoped>
-@import url("~/assets/styles.css");
-</style>
-
-<style scoped>
-@import url("../assets/index.css");
+@import url("../assets/styles.css");
 </style>
