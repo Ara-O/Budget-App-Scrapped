@@ -120,6 +120,22 @@ export async function storeUserBudgetPlan(thisvalue, budgetplan) {
   return userBudget
 }
 
+export async function storeUserBudgetPlanExpense(thisvalue, expenses) {
+  let that = thisvalue;
+  let uid = that.$store.state.userID;
+  
+  let receiveExpense = new Promise(resolve => {
+    const db = getDatabase();
+    set(ref(db, 'users/' + uid + "/expensesToAllocate"), expenses)
+
+    resolve(true)
+  });
+
+  let userBudget = await receiveExpense;
+
+  return userBudget
+}
+
 export async function retrieveUserBudgetPlan(thisvalue) {
   let that = thisvalue
 
@@ -128,6 +144,30 @@ export async function retrieveUserBudgetPlan(thisvalue) {
     const db = getDatabase();
     const uid = that.$store.state.userID;
     const userData = ref(db, 'users/' + uid + '/budgetPlans');
+    onValue(userData, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        resolve(data);
+      } else {
+        reject("There has been error/no data has been found")
+      }
+    });
+  });
+
+  let userData = await retrieveUserData
+
+  return userData
+
+}
+
+export async function expensesToAllocate(thisvalue) {
+  let that = thisvalue
+
+  //Promise that resolves when the data from the user has been retrieved
+  let retrieveUserData = new Promise((resolve, reject) => {
+    const db = getDatabase();
+    const uid = that.$store.state.userID;
+    const userData = ref(db, 'users/' + uid + '/expensesToAllocate');
     onValue(userData, (snapshot) => {
       const data = snapshot.val();
       if (data) {

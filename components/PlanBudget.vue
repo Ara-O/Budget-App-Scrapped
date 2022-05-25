@@ -19,7 +19,6 @@
         </span>
       </div>
     </div>
-
     <div class="plan-budget-items-section_item">
       <div class="plan-budget-items-section_item--indicator"></div>
       <div style="display: flex; flex-direction: column">
@@ -44,7 +43,9 @@ import BaseButton from "./Base/BaseButton.vue";
 import { getUserData } from "../services/firebaseService";
 import {
   storeUserBudgetPlan,
+  storeUserBudgetPlanExpense,
   retrieveUserBudgetPlan,
+  expensesToAllocate
 } from "../services/firebaseService";
 
 export default {
@@ -59,6 +60,7 @@ export default {
       budgetError: false,
       budgetSuccess: false,
       extra: 0,
+      totalExpenses: 0,
     };
   },
 
@@ -66,42 +68,30 @@ export default {
     // If user adds another expense
     entriesChanged() {
       console.log("entries have changed = ", this.entries);
-       let entriesLength = this.entries.length;
-       const budgetItemIndex = this.budgetItems.findIndex(
-         (data) => data.name === this.entries[entriesLength - 1].addTo
-       );
+      let entriesLength = this.entries.length;
+      const budgetItemIndex = this.budgetItems.findIndex(
+        (data) => data.name === this.entries[entriesLength - 1].addTo
+      );
 
-       console.log(this.budgetItems)
-       this.budgetItems[budgetItemIndex].budget += Number(
-         this.entries[entriesLength - 1].amount
-       );
+      console.log(this.budgetItems);
+      if (this.entries[entriesLength - 1].saveAs === "Income") {
+        this.budgetItems[budgetItemIndex].budget += Number(
+          this.entries[entriesLength - 1].amount
+        );
+        storeUserBudgetPlan(this, this.budgetItems).then((data) => {});
+        this.loadIncomeLeeway();
+      } else {
+        this.totalExpenses +=  Math.abs(Number(this.entries[entriesLength - 1].amount));
+        storeUserBudgetPlanExpense(this, this.totalExpenses).then((data) => {
+          console.log("okay so, the data has been stored");
+        });
+        this.loadExpensesLeeway()
+      }
 
-      this.loadIncomeLeeway();
+      retrieveUserBudgetPlan(this).then((data) => {
+        console.log("retrieved budget plan: ", data);
+      });
 
-       storeUserBudgetPlan(this, this.budgetItems).then((data) => {
-         console.log("okay so, the data has been stored");
-       });
-
-       retrieveUserBudgetPlan(this).then((data) => {
-         console.log("retrieved budget plan: ", data);
-     });
-
-      //   // making sure individual budget items cant be less than 0
-      //   this.budgetItems[budgetItemIndex].budget < 0
-      //     ? (this.budgetItems[budgetItemIndex].budget = 0)
-      //     : (this.budgetItems[budgetItemIndex].budget += this.leeway);
-
-      //   //checking to make sure that if the current income is less than 0, all the budget items will be 0
-      //   if (this.$store.state.usersCurrentIncome < 0) {
-      //     this.budgetItems.forEach((item) => (item.budget = 0));
-      //   }
-
-      // storeUserBudgetPlan(this, this.budgetItems).then((res) => {
-      //   this.budgetSuccess = true;
-      //   setInterval(() => {
-      //     this.budgetSuccess = false;
-      //   }, 3000);
-      // });
     },
   },
 
@@ -110,6 +100,13 @@ export default {
       //get and store the leeway
       this.calculateBudgetMax(this.$store.state.usersCurrentIncome);
       this.calculateExtraIncome();
+    },
+
+    loadExpensesLeeway() {
+      //get and store the leeway
+      expensesToAllocate(this).then((data)=> {
+        this.totalExpenses = data
+      })
     },
 
     calculateExtraIncome() {
@@ -126,7 +123,7 @@ export default {
         (total, curr) => Number(curr.budget) + total,
         0
       );
-      console.log("leeway - ", leeway)
+      console.log("leeway - ", leeway);
       leeway = incomeLimit - leeway;
       this.leeway = leeway;
     },
@@ -164,7 +161,7 @@ export default {
     retrieveUserBudgetPlan(this)
       .then((data) => {
         console.log(data);
-         this.budgetItems = data
+        this.budgetItems = data;
         this.loadIncomeLeeway();
       })
       .catch((err) => {
