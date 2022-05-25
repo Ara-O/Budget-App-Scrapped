@@ -41,7 +41,7 @@
 
 <script>
 import BaseButton from "./Base/BaseButton.vue";
-// import { getUserBudgetPlan } from '../services/firebaseService';
+import { getUserData } from "../services/firebaseService";
 import {
   storeUserBudgetPlan,
   retrieveUserBudgetPlan,
@@ -66,17 +66,26 @@ export default {
     // If user adds another expense
     entriesChanged() {
       console.log("entries have changed = ", this.entries);
+       let entriesLength = this.entries.length;
+       const budgetItemIndex = this.budgetItems.findIndex(
+         (data) => data.name === this.entries[entriesLength - 1].addTo
+       );
 
-      // let entriesLength = this.entries.length;
-      //   const budgetItemIndex = this.budgetItems.findIndex(
-      //     (data) => data.name === this.entries[entriesLength - 1].budgetUnder
-      //   );
+       console.log(this.budgetItems)
+       this.budgetItems[budgetItemIndex].budget += Number(
+         this.entries[entriesLength - 1].amount
+       );
 
-      //   this.budgetItems[budgetItemIndex].budget += Number(
-      //     this.entries[entriesLength - 1].income
-      //   );
+      this.loadIncomeLeeway();
 
-      //   this.loadIncomeLeeway();
+       storeUserBudgetPlan(this, this.budgetItems).then((data) => {
+         console.log("okay so, the data has been stored");
+       });
+
+       retrieveUserBudgetPlan(this).then((data) => {
+         console.log("retrieved budget plan: ", data);
+     });
+
       //   // making sure individual budget items cant be less than 0
       //   this.budgetItems[budgetItemIndex].budget < 0
       //     ? (this.budgetItems[budgetItemIndex].budget = 0)
@@ -86,7 +95,6 @@ export default {
       //   if (this.$store.state.usersCurrentIncome < 0) {
       //     this.budgetItems.forEach((item) => (item.budget = 0));
       //   }
-
 
       // storeUserBudgetPlan(this, this.budgetItems).then((res) => {
       //   this.budgetSuccess = true;
@@ -118,6 +126,7 @@ export default {
         (total, curr) => Number(curr.budget) + total,
         0
       );
+      console.log("leeway - ", leeway)
       leeway = incomeLimit - leeway;
       this.leeway = leeway;
     },
@@ -154,14 +163,14 @@ export default {
   mounted() {
     retrieveUserBudgetPlan(this)
       .then((data) => {
-        console.log(data)
-        // this.budgetItems = data
+        console.log(data);
+         this.budgetItems = data
+        this.loadIncomeLeeway();
       })
-      .catch((err) =>{
+      .catch((err) => {
         this.generateBudgetItems();
-        console.log("there is no data")
+        console.log("there is no data");
       });
-    this.loadIncomeLeeway();
   },
   components: { BaseButton },
 };
@@ -174,20 +183,19 @@ article {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  grid-row-gap: 17px;
-  row-gap: 33px;
+  row-gap: 27px;
   align-items: center;
   width: 455px;
 }
 .plan-budget-items-section_item {
-  height: 100px;
+  height: 93px;
   width: 195px;
   background: white;
   border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 15px 22px;
+  padding: 15px 22px 15px 15px;
   box-sizing: border-box;
   column-gap: 26px;
 }

@@ -84,7 +84,7 @@ export default {
 
         //Only set the user data loaded to true when getRecordsData has retrieved all the data
          this.userDataLoaded = true;
-        // this.userEntriesChanged = !this.userEntriesChanged;
+         this.userEntriesChanged = !this.userEntriesChanged;
       });
     },
   },

@@ -84,10 +84,10 @@ export default {
       budgetItems: this.$store.state.budgetItems,
 
       entryData: {
-        description: "",
-        amount: null,
-        saveAs: "Save As",
-        addTo: "Add To",
+        description: "bop",
+        amount: 30,
+        saveAs: "Income",
+        addTo: "Food",
       },
 
       errorMatch: {
@@ -106,8 +106,8 @@ export default {
     successfulEntry() {
       this.alert = true;
       (this.entryData = {
-        description: "",
-        amount: null,
+        description: "bop",
+        amount: 30,
         saveAs: "Save As",
         addTo: "Add To",
       }),
